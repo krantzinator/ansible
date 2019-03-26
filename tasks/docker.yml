@@ -1,0 +1,26 @@
+name: Install Docker and related packages
+shell:
+        cmd: |
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+                sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
+                apt-cache policy docker-ce
+                sudo apt-get install -y docker-ce
+                sudo systemctl status docker
+                sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                sudo chmod +x /usr/local/bin/docker-compose
+                docker-compose --version
+                wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz
+                tar -xf docker-credential-pass-v0.6.0-amd64.tar.gz
+                sudo mv docker-credential-pass /usr/bin/
+                gpg --generate-key
+                output=$(ls ~/.gnupg/openpgp-revocs.d)
+                tmp_key=${output%.*}
+                pass init $tmp_key
+                echo "Insert check into docker-credential"
+                pass insert docker-credential-helpers/docker-pass-initialized-check
+                echo "Echo check to verify docker-credential is functioning"
+                pass show docker-credential-helpers/docker-pass-initialized-check
+                echo "Echo list of docker credentials; should be empty right now"
+                docker-credential-pass list
+                echo "Login to Docker; pwd should auto-store using docker-credentials"
+                docker login

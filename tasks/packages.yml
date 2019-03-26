@@ -1,0 +1,11 @@
+name: Install packages
+apt: name={{item}}
+with_items:
+        - openvpn
+        - easy-rsa
+        - python
+        - go
+        - grpc
+        - rbenv
+        - jq
+        - socat
